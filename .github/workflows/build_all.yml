@@ -49,7 +49,6 @@ jobs:
           name: Linux-Desktop-App
           path: dist/Engineering_CAD_Suite_Linux
 
-  # 3. بناء وتوقيع نسخة الأندرويد مباشرة بدون Docker
   build-android:
     runs-on: ubuntu-22.04
     steps:
@@ -64,14 +63,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install System & Buildozer Dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev automake
-          pip install --upgrade pip
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev automake build-essential ccache
+          pip install --upgrade pip wheel setuptools
           pip install buildozer cython==0.29.36 virtualenv
 
-      - name: Build Android Release (APK & AAB)
+      - name: Build Android APK & AAB
         run: |
           yes | buildozer android debug
           yes | buildozer android release
