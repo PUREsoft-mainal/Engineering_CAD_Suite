@@ -73,6 +73,7 @@ jobs:
 
       - name: Build Android Release (APK & AAB)
         run: |
+          yes | buildozer android debug
           yes | buildozer android release
 
       - name: Decode Keystore & Sign AAB/APK
