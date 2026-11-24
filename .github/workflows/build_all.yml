@@ -1,0 +1,73 @@
+name: Build Desktop (Win/Linux) & Android (APK/AAB)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  # 1. بناء نسخة الويندوز التنفيذية (.exe)
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          pip install pyinstaller ezdxf schemdraw
+      - name: Build Windows EXE
+        run: |
+          pyinstaller --noconfirm --onefile --windowed --name "Engineering_CAD_Suite_Win" --add-data "modules;modules" main_gui.py
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-Desktop-EXE
+          path: dist/Engineering_CAD_Suite_Win.exe
+
+  # 2. بناء نسخة لينكس منت / أوبونتو
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install Tkinter & dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y python3-tk
+          pip install pyinstaller ezdxf schemdraw
+      - name: Build Linux Binary
+        run: |
+          pyinstaller --noconfirm --onefile --windowed --name "Engineering_CAD_Suite_Linux" --add-data "modules:modules" main_gui.py
+      - name: Upload Linux Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linux-Desktop-App
+          path: dist/Engineering_CAD_Suite_Linux
+
+  # 3. بناء نسخة الأندرويد (APK + AAB)
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Android APK
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: build-apk
+        with:
+          buildozer_version: stable
+          command: buildozer android debug
+      - name: Build Android AAB (Release)
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: build-aab
+        with:
+          buildozer_version: stable
+          command: buildozer android release
+      - name: Upload Android APK & AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: Android-APK-and-AAB
+          path: bin/*
