@@ -9,24 +9,22 @@ class SheetMetalModule:
 
     def calculate_circle(self, diameter):
         radius = diameter / 2.0
-        circumference = math.pi * diameter
-        area = math.pi * (radius ** 2)
         return {
-            "المحيط": round(circumference, 3),
-            "المساحة": round(area, 3)
+            "القطر": diameter,
+            "المحيط": round(math.pi * diameter, 3),
+            "المساحة": round(math.pi * (radius ** 2), 3)
         }
 
     def calculate_tank(self, length, width, height):
         volume_m3 = length * width * height
-        capacity_liters = volume_m3 * 1000.0
         return {
             "التكعيب_متر_مكعب": round(volume_m3, 3),
-            "السعة_باللتر": round(capacity_liters, 2)
+            "السعة_باللتر": round(volume_m3 * 1000.0, 2)
         }
 
     def calculate_and_export_cone(self, d_large, d_small, height, filename="cone_pattern.dxf"):
         if d_large == d_small:
-            return {"خطأ": "القطران متساويان؛ هذا الشكل أسطوانة وليس مسلوباً."}
+            return {"خطأ": "القطران متساويان؛ هذا الشكل أسطوانة (مستطيل مفرود) وليس مسلوباً."}
 
         radius_diff = abs(d_large - d_small) / 2.0
         slant_height = math.sqrt(height**2 + radius_diff**2)
@@ -56,9 +54,10 @@ class SheetMetalModule:
         doc.saveas(filepath)
 
         return {
-            "المساحة_التربيعية": round(surface_area, 2),
-            "نصف_القطر_الكبير_R1": round(R1, 2),
-            "نصف_القطر_الصغير_R2": round(R2, 2),
-            "زاوية_التقطيع": round(angle_deg, 2),
-            "مسار_ملف_التقطيع": filepath
+            "المساحة_التربيعية_للصاج": round(surface_area, 2),
+            "طول_الراسم_المائل": round(slant_height, 2),
+            "نصف_قطر_البرجل_الكبير_R1": round(R1, 2),
+            "نصف_قطر_البرجل_الصغير_R2": round(R2, 2),
+            "زاوية_التقطيع_بالدرجات": round(angle_deg, 2),
+            "مسار_ملف_الأوتوكاد": filepath
         }
